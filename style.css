@@ -6,8 +6,9 @@ div.block-container.css-18e3th9.egzxvld2 {
   /* Adjustments for the logo image*/
   
   img {
-    display: block;
-    margin-top: 1.5em;
+    position: absolute;
+    right: 3em;
+    bottom: 3em;
   }
   
   /* Centering text in each gray box */
