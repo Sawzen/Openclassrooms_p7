@@ -3,6 +3,12 @@ div.block-container.css-18e3th9.egzxvld2 {
   margin-top: -5em;
 }
 
+img {
+    #display: block;
+    bottom: -2em;
+  }
+
+
 /* Row 1 */
 div.css-1r6slb0.e1tzin5v2 {
     background-color: #EEEEEE;
@@ -13,7 +19,7 @@ div.css-1r6slb0.e1tzin5v2 {
 /* Row 2 */
 div.css-12w0qpk.e1tzin5v2 {
     background-color: #DCDCDC;
-    padding: 3% 3% 3% 9.5%;
+    padding: 3% 3% 3% 3%;
     border-radius: 5px;
 }
 
