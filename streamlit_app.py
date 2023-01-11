@@ -138,8 +138,16 @@ st.plotly_chart(fig1)
 
 options = st.multiselect(
     'Pour plus de détails sur votre situation ',
-    ['INCOME_PER_PERSON', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_GOODS_PRICE'])
+    ['INCOME_PER_PERSON', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_GOODS_PRICE', 'INCOME_CREDIT_PERC', 
+    'EXT_SOURCE_2', 'CNT_FAM_MEMBERS'])
 
-fig2 = px.box(X_test[options])
-fig2.update_yaxes(type='log')
+
+fig2 = px.box(X_test[options], boxmode="overlay")
+fig2.update_traces(col=1)
+fig2.update_traces(col=2)
+fig2.update_traces(col=3)
+fig2.update_traces(col=4)
+fig2.update_traces(col=5)
+fig2.update_traces(col=6)
+fig2.update_traces(col=7)
 st.plotly_chart(fig2)
