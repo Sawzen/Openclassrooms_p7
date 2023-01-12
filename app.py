@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 
+
 app = Flask(__name__)
 modelfile = 'RF_final_prediction'
 model = p.load(open(modelfile, 'rb'))
