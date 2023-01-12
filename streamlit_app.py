@@ -18,13 +18,6 @@ st.set_page_config(layout="wide")
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-# Image
-image1 = Image.open('logo_credit.png').resize((100,100))
-st.image(image1)
-image2 = Image.open('streamlit-logo-secondary-colormark-darktext.png').resize((100,100))
-st.image(image2)
-
-# Data
 X_test = p.load(open("X_test", 'rb'))
 ID_client_liste = list(X_test["SK_ID_CURR"])
 best_tresh = 0.44
@@ -136,18 +129,12 @@ fig1 = go.Figure(
 )
 st.plotly_chart(fig1)
 
-options = st.multiselect(
-    'Pour plus de détails sur votre situation ',
+#if st.checkbox("Vous avez besoin de plus de précisions ?") :
+options = st.multiselect('Veuillez séléctionner les informations qui vous intéressent :',
     ['INCOME_PER_PERSON', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_GOODS_PRICE', 'INCOME_CREDIT_PERC', 
     'EXT_SOURCE_2', 'CNT_FAM_MEMBERS'])
-
-
-fig2 = px.box(X_test[options], boxmode="overlay")
-fig2.update_traces(col=1)
-fig2.update_traces(col=2)
-fig2.update_traces(col=3)
-fig2.update_traces(col=4)
-fig2.update_traces(col=5)
-fig2.update_traces(col=6)
-fig2.update_traces(col=7)
+#if options :
+fig2 = px.box(options)
+fig2.update_yaxes(type='log')
 st.plotly_chart(fig2)
+
