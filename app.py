@@ -7,7 +7,7 @@ from sklearn import preprocessing
 
 
 app = Flask(__name__)
-modelfile = 'RF_final_prediction'
+modelfile = 'final_prediction'
 model = p.load(open(modelfile, 'rb'))
 x_test = p.load(open("X_test", 'rb'))
 std_scale = p.load(open("std_scale", 'rb'))
