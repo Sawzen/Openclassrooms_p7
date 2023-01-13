@@ -10,16 +10,14 @@ import pickle as p
 import plotly.express as px 
 import altair as alt
 
-
 # Page setting
 st.set_page_config(layout="wide")
 with open('style.css') as f:
     st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
 X_test = p.load(open("X_test", 'rb'))
-ID_client_liste = list(X_test["SK_ID_CURR"])
-best_tresh = 0.55
-#p.load(open("best_tresh", 'rb'))
+best_thresh = p.load(open("best_thresh", 'rb'))
+data_thresh = p.load(open("data_thresh", 'rb'))
 
 # Title 
 st.title('Bienvenue sur Prêt à dépenser :smile:')
@@ -29,51 +27,30 @@ st.title('Bienvenue sur Prêt à dépenser :smile:')
 ID_client = st.multiselect('Veuillez entrer votre numéro client: ',pd.unique(X_test["SK_ID_CURR"]), max_selections = 1)
 
 
-# Data client
 if ID_client :
+    # Data client
     ID_client = ID_client[0]
+    data_client = X_test[X_test["SK_ID_CURR"] == ID_client]
+    df = data_thresh[data_thresh["SK_ID_CURR"] == ID_client]
+    thresh_client = df["thresh"].values[0]
 
     #Row B
-    st.markdown("""
-    <style>
-    .big-font {
-        font-size:600;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    st.markdown('<p class="big-font">Voici quelques informations vous concernant :</p>', unsafe_allow_html=True)
-    data_client = X_test[X_test["SK_ID_CURR"]== ID_client]
+    st.markdown('Voici quelques informations vous concernant :', unsafe_allow_html=True)
 
-    if data_client["CODE_GENDER"].values[0] == 0:
-        data_client["Genre"] = "Homme"
-    if data_client["CODE_GENDER"].values[0] == 1:
-        data_client["Genre"] = "Femme"
-
-    if data_client["FLAG_OWN_CAR"].values[0] == 0:
-        data_client["Dispose d'une voiture"] = "Non"
-    if data_client["FLAG_OWN_CAR"].values[0] == 1:
-        data_client["Dispose d'une voiture"] = "Oui"
-
-    if data_client["TARGET"].values[0] == 0:
-        data_client["Réponse crédit"] = "Crédit refusé"
-    if data_client["TARGET"].values[0] == 1:
-        data_client["Réponse crédit"] = "Crédit accordé"
-
-
-    # Row B
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    if data_client["Genre"].values[0] == 0:
-        kpi1.metric(label="Genre :man:", value = str(data_client["Genre"].values[0]))
-    if data_client["Genre"].values[0] == 1:
-        kpi1.metric(label="Genre :woman:", value = str(data_client["Genre"].values[0]))
+    if data_client["CODE_GENDER"].values[0] == 0:
+        kpi1.metric(label="Genre :man:", value = str("Homme"))
+    if data_client["CODE_GENDER"].values[0] == 1:
+        kpi1.metric(label="Genre :woman:", value = str("Femme"))
+    
+    if data_client["FLAG_OWN_CAR"].values[0] == 0:
+        kpi2.metric(label="Genre :car:", value = str("Oui"))
+    if data_client["FLAG_OWN_CAR"].values[0] == 1:
+        kpi2.metric(label="Genre :car:", value = str("Non"))
 
-    #kpi2.metric(label = "Age :birthday: ", value = int(data_client["DAYS_BIRTH"].values[0] ))
-    kpi2.metric(label ="Dispose d'une voiture :car:", value = str(data_client["Dispose d'une voiture"].values[0]))
     kpi3.metric(label ="Nombre d'enfant :family:", value = int(data_client["CNT_CHILDREN"].values[0]))
-    if data_client["Réponse crédit"].values[0] == 0:
-        kpi4.metric(label ="Réponse crédit :white_check_mark:", value = str(data_client["Réponse crédit"].values[0]))
-    if data_client["Réponse crédit"].values[0] == 1 :
-        kpi4.metric(label ="Réponse crédit :x:", value = str(data_client["Réponse crédit"].values[0]))
+
+    kpi4.metric(label ="Revenu annuel :heavy_dollar_sign:", value = int(data_client["AMT_ANNUITY"].values[0]))
 
 
     # Row C 
@@ -87,7 +64,7 @@ if ID_client :
         min_value = 0
         max_value = 1
         hand_length = np.sqrt(2) / 4
-        hand_angle = np.pi * (1 - (max(min_value, min(max_value, best_tresh)) - min_value) / (max_value - min_value))
+        hand_angle = np.pi * (1 - (max(min_value, min(max_value, thresh_client)) - min_value) / (max_value - min_value))
 
         fig1 = go.Figure(
             data=[
@@ -109,7 +86,7 @@ if ID_client :
                 paper_bgcolor=plot_bgcolor,
                 annotations=[
                     go.layout.Annotation(
-                        text=f"<b>Votre score de crédit :</b><br>{best_tresh}",
+                        text=f"<b>Votre score de crédit :</b><br>{thresh_client}",
                         x=0.5, xanchor="center", xref="paper", 
                         y=0.25, yanchor="bottom", yref="paper", 
                         showarrow=False, 
@@ -134,21 +111,22 @@ if ID_client :
         )
         st.plotly_chart(fig1)
 
+
     with col2:
-        if st.checkbox("Vous avez besoin de plus de précisions ?") :
+        if thresh_client <= best_thresh:
+            st.subheader("D'après les informations que nous disposons, votre situation **:vous autorise un crédit** :white_check_mark:.")
+        
+        if thresh_client > best_thresh:
+            st.subheader("D'après les informations que nous disposons, votre situation **:ne vous autorise pas de crédit** :x:.")
+            st.subheader("Ci-dessous sont affichés les paramètres pour lequels le crédit est refusé.")
+
+#Last row
+    if st.checkbox("Vous avez besoin de plus de précisions ?") :
             options1 = st.multiselect('Veuillez séléctionner les informations qui vous intéressent :',
                 ['INCOME_PER_PERSON', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_GOODS_PRICE'])
             if options1:
                 fig2 = px.box(X_test[options1], notched = True, width=900)
                 fig2.update_yaxes(type='log')
                 st.plotly_chart(fig2)
-
-#Last row
-    if data_client["TARGET"].values[0] == 0:
-        st.subheader("D'après les informations que nous disposons, votre situation **:vous autorise un crédit** :white_check_mark:.")
-        
-    if data_client["TARGET"].values[0] == 1:
-        st.subheader("D'après les informations que nous disposons, votre situation **:ne vous autorise pas de crédit** :x:.")
-        st.subheader("Ci-dessous sont affichés les paramètres pour lequels le crédit et refusé.")
 
 
