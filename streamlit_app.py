@@ -114,10 +114,10 @@ if ID_client :
 
     with col2:
         if thresh_client <= best_thresh:
-            st.subheader("D'après les informations que nous disposons, votre situation **:vous autorise un crédit** :white_check_mark:.")
+            st.subheader("D'après les informations que nous disposons, votre situation vous autorise un crédit :white_check_mark:.")
         
         if thresh_client > best_thresh:
-            st.subheader("D'après les informations que nous disposons, votre situation **:ne vous autorise pas de crédit** :x:.")
+            st.subheader("D'après les informations que nous disposons, votre situation ne vous autorise pas de crédit :x:.")
             st.subheader("Ci-dessous sont affichés les paramètres pour lequels le crédit est refusé.")
 
 #Last row
