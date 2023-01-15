@@ -9,6 +9,7 @@ import time
 import pickle as p
 import plotly.express as px 
 import altair as alt
+from plotly.subplots import make_subplots
 
 # Page setting
 st.set_page_config(layout="wide")
@@ -125,8 +126,11 @@ if ID_client :
             options1 = st.multiselect('Veuillez séléctionner les informations qui vous intéressent :',
                 ['INCOME_PER_PERSON', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_GOODS_PRICE'])
             if options1:
-                fig2 = px.box(X_test[options1], notched = True, width=900)
-                fig2.update_yaxes(type='log')
-                st.plotly_chart(fig2)
+                fig2 = px.box(X_test[options1], notched = True, width=450, points =None)
+                fig3 = px.scatter(data_client[options1])
+                fig4 = go.Figure(data=fig2.data + fig3.data)
+                fig4.update_yaxes(type='log')
+                st.plotly_chart(fig4)
+
 
 
