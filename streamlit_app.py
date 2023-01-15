@@ -19,6 +19,7 @@ with open('style.css') as f:
 X_test = p.load(open("X_test", 'rb'))
 best_thresh = p.load(open("best_thresh", 'rb'))
 data_thresh = p.load(open("data_thresh", 'rb'))
+features_importance = p.load(open("feat_importances", 'rb'))
 
 # Title 
 st.title('Bienvenue sur Prêt à dépenser :smile:')
@@ -119,12 +120,12 @@ if ID_client :
         
         if thresh_client > best_thresh:
             st.subheader("D'après les informations que nous disposons, votre situation ne vous autorise pas de crédit :x:.")
-            st.subheader("Ci-dessous sont affichés les paramètres pour lequels le crédit est refusé.")
-
 #Last row
+    list_features = list(features_importance.index[177:])
+    st.markdown("Si vous souhaitez avoir plus de détails veuillez cocher la case ci-dessous.")
     if st.checkbox("Vous avez besoin de plus de précisions ?") :
             options1 = st.multiselect('Veuillez séléctionner les informations qui vous intéressent :',
-                ['INCOME_PER_PERSON', 'AMT_INCOME_TOTAL', 'AMT_CREDIT', 'AMT_GOODS_PRICE'])
+                list_features)
             if options1:
                 fig2 = px.box(X_test[options1], notched = True, width=450, points =None)
                 fig3 = px.scatter(data_client[options1])
