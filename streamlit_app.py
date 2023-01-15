@@ -35,6 +35,8 @@ X_test = p.load(open("X_test", 'rb'))
 best_thresh = p.load(open("best_thresh", 'rb'))
 data_thresh = p.load(open("data_thresh", 'rb'))
 features_importance = p.load(open("feat_importances", 'rb'))
+modelfile = 'final_prediction'
+model = p.load(open(modelfile, 'rb'))
 
 # Title 
 st.title('Bienvenue sur Prêt à dépenser :smile:')
@@ -51,6 +53,7 @@ if ID_client :
     df = data_thresh[data_thresh["SK_ID_CURR"] == ID_client]
     #thresh_client = df["thresh"].values[0]
     thresh_client = score_model(ID_client)
+
 
     #Row B
     st.markdown('Voici quelques informations vous concernant :', unsafe_allow_html=True)
@@ -75,8 +78,8 @@ if ID_client :
     col1, col2 = st.columns(2)
     with col1:
         plot_bgcolor = "lightgrey"
-        quadrant_colors = [plot_bgcolor, "#f25829", "#f2a529", "#85e043", "#2bad4e"] 
-        quadrant_text = ["", "<b>Très bas</b>", "<b>bas</b>", "<b>Elevé</b>", "<b>Très élevé</b>"]
+        quadrant_colors = [plot_bgcolor, "#f25829", "#f2a529", "#2bad4e"] 
+        quadrant_text = ["", "<b>Très bas</b>", "<b>bas</b>", "<b>Très élevé</b>"]
         n_quadrants = len(quadrant_colors) - 1
 
         min_value = 0
@@ -131,11 +134,12 @@ if ID_client :
 
 
     with col2:
-        if thresh_client <= best_thresh:
+        if thresh_client < best_thresh:
             st.subheader("D'après les informations que nous disposons, votre situation vous autorise un crédit :white_check_mark:.")
         
-        if thresh_client > best_thresh:
+        if thresh_client >= best_thresh:
             st.subheader("D'après les informations que nous disposons, votre situation ne vous autorise pas de crédit :x:.")
+
 #Last row
     list_features = list(features_importance.index[177:])
     st.markdown("Si vous souhaitez avoir plus de détails veuillez cocher la case ci-dessous.")
@@ -148,6 +152,4 @@ if ID_client :
                 fig4 = go.Figure(data=fig2.data + fig3.data)
                 fig4.update_yaxes(type='log')
                 st.plotly_chart(fig4)
-
-
 
