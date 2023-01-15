@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import json
 import flask
 import pandas as pd
 import numpy as np
@@ -10,6 +11,20 @@ import pickle as p
 import plotly.express as px 
 import altair as alt
 from plotly.subplots import make_subplots
+
+FLASK_URL = "http://127.0.0.1:5000/"
+
+@st.cache
+def score_model(id_client):
+    # url de l'id     SK_ID_CURR
+    score_url = FLASK_URL + "prediction/" + str(id_client)
+    ## intéroger l'API et sauvegarder le résultat
+    response = requests.get(score_url)
+    ## Convertir en format json
+    content = json.loads(response.content.decode('utf-8'))
+    ##
+    score_model = (content['score'])
+    return score_model
 
 # Page setting
 st.set_page_config(layout="wide")
@@ -34,13 +49,14 @@ if ID_client :
     ID_client = ID_client[0]
     data_client = X_test[X_test["SK_ID_CURR"] == ID_client]
     df = data_thresh[data_thresh["SK_ID_CURR"] == ID_client]
-    thresh_client = df["thresh"].values[0]
+    #thresh_client = df["thresh"].values[0]
+    thresh_client = score_model(ID_client)
 
     #Row B
     st.markdown('Voici quelques informations vous concernant :', unsafe_allow_html=True)
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    if data_client["CODE_GENDER"].values[0] == 0:
+    if data_client["CODE_GENDER"].values[0] == 0:#
         kpi1.metric(label="Genre :man:", value = str("Homme"))
     if data_client["CODE_GENDER"].values[0] == 1:
         kpi1.metric(label="Genre :woman:", value = str("Femme"))

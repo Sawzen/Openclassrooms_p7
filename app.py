@@ -16,11 +16,11 @@ def prediction(client_id):
     client_id = int(client_id)
     client_feat = x_test.loc[x_test["SK_ID_CURR"] == client_id]
     client_feat = client_feat.drop(columns ="SK_ID_CURR")
-    prediction = np.array2string(model.predict(client_feat))
+    prediction = np.array2string(model.predict_proba(client_feat))
     return jsonify(prediction)
 
 if __name__ == '__main__':
     import os
     PORT = os.environ.get('PORT', 5000)
-    app.run(host = 0.0.0.0, port = PORT, debug=True)
+    app.run(host = "0.0.0.0", port = PORT, debug=True)
     
